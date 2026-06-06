@@ -27,6 +27,8 @@ https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/status.json
 - 最多并发检查 12 个候选，每个候选默认超时 12 秒。
 - JSON、M3U/TVBox 文本直播列表和 XMLTV 均会做格式验证。
 - 状态报告会统计每个可用播放列表及其频道条目数量。
+- 对播放列表内的频道 URL 做并发媒体探测，去重后生成 `public/live.m3u`。
+- TVBox 只引用仓库生成的已探测直播列表，不再直接加载全部上游条目。
 - 内网地址、非 HTTP(S) 地址以及疑似 Cookie、Token、Authorization
   等账号凭据会被拒绝。
 - 连续可用天数越多、响应越快，评分越高；不可用源不会进入发布配置。
@@ -81,6 +83,7 @@ python -m unittest discover -s tests -v
 生成文件位于 `public/`：
 
 - `tvbox.json`：TVBox 使用的固定配置
+- `live.m3u`：逐条探测后生成的直播列表
 - `status.json`：机器可读的检查报告
 - `index.html`：可视化状态页
 

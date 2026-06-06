@@ -40,6 +40,14 @@ class CheckResult:
     final_url: str = ""
 
 
+@dataclass
+class Channel:
+    name: str
+    url: str
+    metadata: str = ""
+    group: str = ""
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -153,6 +161,122 @@ def validate_playlist(content: bytes) -> tuple[bool, str]:
     if count:
         return True, f"valid TVBox text playlist ({count} channels)"
     return False, "unrecognized playlist format"
+
+
+def parse_playlist(content: bytes, default_group: str = "") -> list[Channel]:
+    text = decode_text(content)
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    channels: list[Channel] = []
+    pending_metadata = ""
+    pending_name = ""
+    pending_group = default_group
+    for line in lines:
+        if line.startswith("#EXTINF"):
+            pending_metadata = line
+            pending_name = line.rsplit(",", 1)[-1].strip() or "Unnamed"
+            group_match = re.search(r'group-title="([^"]*)"', line, re.IGNORECASE)
+            pending_group = (
+                group_match.group(1).strip() if group_match else default_group
+            )
+            continue
+        if line.startswith("#"):
+            continue
+        if "://" in line and pending_metadata:
+            channels.append(
+                Channel(pending_name, line, pending_metadata, pending_group)
+            )
+            pending_metadata = ""
+            pending_name = ""
+            pending_group = default_group
+            continue
+        if "," in line and "://" in line:
+            name, url = line.split(",", 1)
+            channels.append(
+                Channel(name.strip() or "Unnamed", url.strip(), "", default_group)
+            )
+    return channels
+
+
+def validate_stream(url: str, timeout: float) -> CheckResult:
+    if "|" in url:
+        return CheckResult(False, 0, "custom-header stream skipped")
+    result = fetch(url, timeout, max_bytes=128_000)
+    if not result.ok or not result.content:
+        return result
+    sample = result.content[:16_000]
+    text = decode_text(sample).lstrip()
+    if text.startswith("#EXTM3U"):
+        if "#EXT-X-STREAM-INF" in text or "#EXTINF" in text:
+            return CheckResult(
+                True, result.latency_ms, "reachable HLS stream", final_url=result.final_url
+            )
+        return CheckResult(False, result.latency_ms, "invalid HLS manifest")
+    if sample.startswith((b"\x47", b"\x00\x00\x00", b"FLV", b"RIFF", b"\x1aE\xdf\xa3")) or b"ftyp" in sample[:32]:
+        return CheckResult(
+            True, result.latency_ms, "reachable media stream", final_url=result.final_url
+        )
+    return CheckResult(False, result.latency_ms, "response is not recognized media")
+
+
+def check_streams(
+    reports: list[dict[str, Any]],
+    timeout: float,
+    workers: int,
+    max_total: int,
+    max_per_playlist: int,
+) -> tuple[list[Channel], dict[str, Any]]:
+    candidates: list[Channel] = []
+    seen_urls: set[str] = set()
+    for report in sorted(
+        (item for item in reports if item["ok"] and item["kind"] == "live_playlist"),
+        key=lambda item: (-item["score"], item["name"]),
+    ):
+        playlist = report.get("_playlist", b"")
+        parsed = parse_playlist(playlist, report["name"])
+        selected = parsed[:max_per_playlist] if max_per_playlist > 0 else parsed
+        for channel in selected:
+            if channel.url not in seen_urls:
+                candidates.append(channel)
+                seen_urls.add(channel.url)
+            if max_total > 0 and len(candidates) >= max_total:
+                break
+        if max_total > 0 and len(candidates) >= max_total:
+            break
+
+    checked = 0
+    available: list[tuple[Channel, CheckResult]] = []
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
+        futures = {
+            executor.submit(validate_stream, channel.url, timeout): channel
+            for channel in candidates
+        }
+        for future in as_completed(futures):
+            checked += 1
+            result = future.result()
+            if result.ok:
+                channel = futures[future]
+                if result.final_url:
+                    channel.url = result.final_url
+                available.append((channel, result))
+    available.sort(key=lambda item: (item[1].latency_ms, item[0].group, item[0].name))
+    return [item[0] for item in available], {
+        "streams_checked": checked,
+        "streams_available": len(available),
+    }
+
+
+def build_m3u(channels: list[Channel]) -> str:
+    lines = ["#EXTM3U"]
+    for channel in channels:
+        if channel.metadata:
+            metadata = channel.metadata
+        else:
+            escaped_group = channel.group.replace('"', "'")
+            metadata = (
+                f'#EXTINF:-1 group-title="{escaped_group}",{channel.name}'
+            )
+        lines.extend((metadata, channel.url))
+    return "\n".join(lines) + "\n"
 
 
 def validate_epg(content: bytes) -> tuple[bool, str]:
@@ -322,6 +446,8 @@ def check_candidates(
             checked["channel_count"] = int(channel_match.group(1))
         if parsed_config is not None:
             checked["_config"] = parsed_config
+        if valid and entry["kind"] == "live_playlist":
+            checked["_playlist"] = response.content
         source_state = {
             key: checked[key]
             for key in (
@@ -346,7 +472,9 @@ def check_candidates(
 
 
 def build_tvbox_config(
-    base: dict[str, Any], reports: list[dict[str, Any]]
+    base: dict[str, Any],
+    reports: list[dict[str, Any]],
+    verified_channels: list[Channel] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     good = [item for item in reports if item["ok"]]
     configs = sorted(
@@ -363,12 +491,30 @@ def build_tvbox_config(
     )
 
     output = dict(base)
+    output.pop("published_live_url", None)
     selected_config = None
     if configs:
         selected_config = configs[0]
         output.update(selected_config["_config"])
 
-    if playlists:
+    if verified_channels:
+        live_url = str(
+            base.get(
+                "published_live_url",
+                "https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/live.m3u",
+            )
+        )
+        output["lives"] = [
+            {
+                "name": f"每日验证直播 ({len(verified_channels)})",
+                "type": 0,
+                "url": live_url,
+                "playerType": 1,
+                "epg": epgs[0]["url"] if epgs else "",
+                "logo": "",
+            }
+        ]
+    elif playlists:
         default_epg = epgs[0]["url"] if epgs else ""
         output["lives"] = [
             {
@@ -383,7 +529,11 @@ def build_tvbox_config(
         ]
 
     public_reports = [
-        {key: value for key, value in item.items() if key != "_config"}
+        {
+            key: value
+            for key, value in item.items()
+            if key not in ("_config", "_playlist")
+        }
         for item in sorted(
             reports,
             key=lambda item: (
@@ -462,6 +612,11 @@ def main() -> int:
     parser.add_argument(
         "--workers", type=int, default=int(os.environ.get("CHECK_WORKERS", "12"))
     )
+    parser.add_argument(
+        "--stream-workers",
+        type=int,
+        default=int(os.environ.get("STREAM_CHECK_WORKERS", "32")),
+    )
     args = parser.parse_args()
 
     candidate_config = read_json(args.candidates, {})
@@ -471,11 +626,23 @@ def main() -> int:
     reports, state = check_candidates(
         candidates, previous, args.timeout, args.workers
     )
-    output, status = build_tvbox_config(base, reports)
+    stream_config = candidate_config.get("stream_check", {})
+    verified_channels, stream_status = check_streams(
+        reports,
+        float(stream_config.get("timeout", 7)),
+        args.stream_workers,
+        int(stream_config.get("max_total", 800)),
+        int(stream_config.get("max_per_playlist", 100)),
+    )
+    output, status = build_tvbox_config(base, reports, verified_channels)
+    status["counts"].update(stream_status)
 
     write_json(args.state, state)
     write_json(args.output / "tvbox.json", output)
     write_json(args.output / "status.json", status)
+    (args.output / "live.m3u").write_text(
+        build_m3u(verified_channels), encoding="utf-8", newline="\n"
+    )
     (args.output / "index.html").write_text(
         build_index(status), encoding="utf-8", newline="\n"
     )

@@ -5,9 +5,12 @@ from unittest.mock import patch
 
 from tvbox_aggregator import (
     CheckResult,
+    Channel,
+    build_m3u,
     build_tvbox_config,
     contains_sensitive_data,
     load_candidates,
+    parse_playlist,
     score_result,
     validate_epg,
     validate_playlist,
@@ -40,6 +43,19 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(valid)
         self.assertIn("1 channels", detail)
         self.assertTrue(validate_playlist("央视,http://example.test/live\n".encode())[0])
+
+    def test_parse_playlist(self):
+        channels = parse_playlist(
+            b'#EXTM3U\n#EXTINF:-1 group-title="News",Demo\nhttps://x/live.m3u8'
+        )
+        self.assertEqual(len(channels), 1)
+        self.assertEqual(channels[0].name, "Demo")
+        self.assertEqual(channels[0].group, "News")
+
+    def test_build_m3u(self):
+        value = build_m3u([Channel("Demo", "https://x/live.m3u8", group="News")])
+        self.assertIn('group-title="News",Demo', value)
+        self.assertIn("https://x/live.m3u8", value)
 
     def test_epg_gzip(self):
         xml = b'<?xml version="1.0"?><tv><channel id="demo"/></tv>'
@@ -84,6 +100,17 @@ class RankingTests(unittest.TestCase):
         output, status = build_tvbox_config({"sites": []}, reports)
         self.assertEqual(status["selected_config"], "stable")
         self.assertEqual(output["sites"][0]["key"], "stable")
+
+    def test_verified_channels_use_merged_playlist(self):
+        output, _ = build_tvbox_config(
+            {
+                "sites": [],
+                "published_live_url": "https://example.test/live.m3u",
+            },
+            [],
+            [Channel("Demo", "https://x/live.m3u8")],
+        )
+        self.assertEqual(output["lives"][0]["url"], "https://example.test/live.m3u")
 
     @patch("tvbox_aggregator.fetch")
     def test_catalog_discovery_expands_selected_records(self, mock_fetch):

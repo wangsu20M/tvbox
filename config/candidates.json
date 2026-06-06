@@ -1,4 +1,9 @@
 {
+  "stream_check": {
+    "timeout": 7,
+    "max_total": 800,
+    "max_per_playlist": 100
+  },
   "discovery_feeds": [],
   "catalog_discovery": [
     {
