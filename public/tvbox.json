@@ -9,6 +9,14 @@
       "playerType": 1,
       "epg": "https://worker-9dd4.onrender.com/guide.xml",
       "logo": ""
+    },
+    {
+      "name": "IPTV.org 中国公开频道",
+      "type": 0,
+      "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
+      "playerType": 1,
+      "epg": "https://worker-9dd4.onrender.com/guide.xml",
+      "logo": ""
     }
   ]
 }

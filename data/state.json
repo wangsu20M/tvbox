@@ -1,32 +1,32 @@
 {
-  "updated_at": "2026-06-06T11:59:51+00:00",
+  "updated_at": "2026-06-06T12:46:38+00:00",
   "sources": {
-    "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8": {
+    "https://worker-9dd4.onrender.com/guide.xml": {
       "ok": true,
-      "latency_ms": 49,
-      "detail": "valid M3U playlist",
-      "success_streak": 2,
+      "latency_ms": 74,
+      "detail": "valid XMLTV document",
+      "success_streak": 3,
       "failure_streak": 0,
-      "score": 43.76,
-      "checked_at": "2026-06-06T11:59:51+00:00"
+      "score": 45.63,
+      "checked_at": "2026-06-06T12:46:38+00:00"
     },
     "https://iptv-org.github.io/iptv/countries/cn.m3u": {
       "ok": true,
-      "latency_ms": 47,
+      "latency_ms": 181,
       "detail": "valid M3U playlist",
-      "success_streak": 1,
-      "failure_streak": 0,
-      "score": 41.77,
-      "checked_at": "2026-06-06T11:59:51+00:00"
-    },
-    "https://worker-9dd4.onrender.com/guide.xml": {
-      "ok": true,
-      "latency_ms": 102,
-      "detail": "valid XMLTV document",
       "success_streak": 2,
       "failure_streak": 0,
-      "score": 43.49,
-      "checked_at": "2026-06-06T11:59:51+00:00"
+      "score": 43.09,
+      "checked_at": "2026-06-06T12:46:38+00:00"
+    },
+    "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8": {
+      "ok": true,
+      "latency_ms": 223,
+      "detail": "valid M3U playlist",
+      "success_streak": 3,
+      "failure_streak": 0,
+      "score": 44.88,
+      "checked_at": "2026-06-06T12:46:38+00:00"
     }
   }
 }
