@@ -1,5 +1,6 @@
 import gzip
 import json
+import os
 import unittest
 from unittest.mock import patch
 
@@ -17,6 +18,7 @@ from tvbox_aggregator import (
     validate_playlist,
     validate_tvbox_config,
 )
+from local_filter import disable_proxies
 
 
 class ValidationTests(unittest.TestCase):
@@ -99,6 +101,11 @@ class ValidationTests(unittest.TestCase):
         result = validate_stream("https://example.test/master.m3u8", 1)
         self.assertTrue(result.ok)
         self.assertEqual(mock_fetch.call_count, 3)
+
+    def test_disable_proxies_removes_proxy_environment(self):
+        with patch.dict(os.environ, {"HTTP_PROXY": "http://127.0.0.1:1"}):
+            disable_proxies()
+            self.assertNotIn("HTTP_PROXY", os.environ)
 
     def test_epg_gzip(self):
         xml = b'<?xml version="1.0"?><tv><channel id="demo"/></tv>'

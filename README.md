@@ -30,6 +30,8 @@ https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/status.json
 - 对播放列表内的频道 URL 做并发媒体探测，去重后生成 `public/live.m3u`。
 - TVBox 只引用仓库生成的已探测直播列表，不再直接加载全部上游条目。
 - 默认优先中国及周边公开目录、仅保留 HTTPS，并输出中文分组。
+- GitHub 只生成境外发现候选 `public/candidates.m3u`；墙内可播结果由本机
+  直连检测生成 `public/live.m3u`。
 - 内网地址、非 HTTP(S) 地址以及疑似 Cookie、Token、Authorization
   等账号凭据会被拒绝。
 - 连续可用天数越多、响应越快，评分越高；不可用源不会进入发布配置。
@@ -81,10 +83,29 @@ python tvbox_aggregator.py
 python -m unittest discover -s tests -v
 ```
 
+### 墙内直连筛选
+
+GitHub 和 Cloudflare 都是境外节点，不能判断关闭代理后能否播放。Windows
+本地筛选器会明确忽略 `HTTP_PROXY`、`HTTPS_PROXY` 和系统代理：
+
+```powershell
+python local_filter.py
+```
+
+每天自动运行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install_local_task.ps1
+```
+
+任务默认每天 04:10 运行。电脑关机时会在下次开机后补跑。GitHub 拉取和
+推送允许使用 `127.0.0.1:10808`，但频道媒体检测始终强制直连。
+
 生成文件位于 `public/`：
 
 - `tvbox.json`：TVBox 使用的固定配置
 - `live.m3u`：逐条探测后生成的直播列表
+- `candidates.m3u`：GitHub 境外节点发现的候选列表
 - `status.json`：机器可读的检查报告
 - `index.html`：可视化状态页
 

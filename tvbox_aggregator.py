@@ -694,6 +694,10 @@ def main() -> int:
         type=int,
         default=int(os.environ.get("STREAM_CHECK_WORKERS", "32")),
     )
+    parser.add_argument(
+        "--live-filename",
+        default=os.environ.get("LIVE_OUTPUT_FILENAME", "live.m3u"),
+    )
     args = parser.parse_args()
 
     candidate_config = read_json(args.candidates, {})
@@ -719,7 +723,7 @@ def main() -> int:
     write_json(args.state, state)
     write_json(args.output / "tvbox.json", output)
     write_json(args.output / "status.json", status)
-    (args.output / "live.m3u").write_text(
+    (args.output / args.live_filename).write_text(
         build_m3u(verified_channels), encoding="utf-8", newline="\n"
     )
     (args.output / "index.html").write_text(

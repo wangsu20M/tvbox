@@ -27,7 +27,7 @@ jobs:
           python-version: "3.12"
 
       - name: Check and rank sources
-        run: python tvbox_aggregator.py
+        run: python tvbox_aggregator.py --live-filename candidates.m3u
 
       - name: Run tests
         run: python -m unittest discover -s tests -v
@@ -36,6 +36,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/state.json public/
+          git add data/state.json public/candidates.m3u public/status.json public/index.html
           git diff --cached --quiet || git commit -m "chore: update source health"
           git push
