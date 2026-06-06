@@ -1,27 +1,28 @@
 # TVBox Source Keeper
 
 每天检查一组经过登记的公开 TVBox、直播和 EPG 地址，剔除失效项，按连续
-成功次数和响应延迟排序，然后通过 GitHub Pages 发布一个不变的
+成功次数和响应延迟排序，然后通过 GitHub 固定地址发布一个不变的
 `tvbox.json` 地址。
 
 ## 固定地址
 
-仓库发布后，在 TVBox 中填写：
+在 TVBox 中填写：
 
 ```text
-https://<你的 GitHub 用户名>.github.io/<仓库名>/tvbox.json
+https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/tvbox.json
 ```
 
-状态页：
+机器可读状态：
 
 ```text
-https://<你的 GitHub 用户名>.github.io/<仓库名>/
+https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/status.json
 ```
 
 ## 工作方式
 
 - `config/candidates.json` 保存候选配置、直播列表、EPG 和公开发现清单。
 - GitHub Actions 每天北京时间 03:23 运行，也可以手动运行。
+- 检查结果直接提交回 `main`，无需配置 GitHub Pages。
 - 最多并发检查 12 个候选，每个候选默认超时 12 秒。
 - JSON、M3U/TVBox 文本直播列表和 XMLTV 均会做格式验证。
 - 内网地址、非 HTTP(S) 地址以及疑似 Cookie、Token、Authorization
@@ -80,13 +81,6 @@ python -m unittest discover -s tests -v
 - `tvbox.json`：TVBox 使用的固定配置
 - `status.json`：机器可读的检查报告
 - `index.html`：可视化状态页
-
-## GitHub Pages 设置
-
-1. 推送仓库。
-2. 打开仓库 `Settings > Pages`。
-3. 将 `Build and deployment > Source` 设为 `GitHub Actions`。
-4. 在 `Actions` 中手动运行一次 `Update TVBox sources`。
 
 项目默认仅带两个声明为公开免费频道的直播候选和一个社区 EPG。影视点播
 接口需要权利方授权后再加入；不要把私人网盘凭据提交到公开仓库。
