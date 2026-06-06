@@ -11,6 +11,7 @@ from tvbox_aggregator import (
     contains_sensitive_data,
     load_candidates,
     parse_playlist,
+    validate_stream,
     score_result,
     validate_epg,
     validate_playlist,
@@ -56,6 +57,35 @@ class ValidationTests(unittest.TestCase):
         value = build_m3u([Channel("Demo", "https://x/live.m3u8", group="News")])
         self.assertIn('group-title="News",Demo', value)
         self.assertIn("https://x/live.m3u8", value)
+
+    @patch("tvbox_aggregator.fetch")
+    def test_stream_validation_follows_hls_to_media(self, mock_fetch):
+        mock_fetch.side_effect = [
+            CheckResult(
+                True,
+                10,
+                "ok",
+                b"#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=1\nchild.m3u8",
+                "https://example.test/master.m3u8",
+            ),
+            CheckResult(
+                True,
+                10,
+                "ok",
+                b"#EXTM3U\n#EXTINF:10,\nsegment.ts",
+                "https://example.test/child.m3u8",
+            ),
+            CheckResult(
+                True,
+                10,
+                "ok",
+                b"\x47" + b"\x00" * 512,
+                "https://example.test/segment.ts",
+            ),
+        ]
+        result = validate_stream("https://example.test/master.m3u8", 1)
+        self.assertTrue(result.ok)
+        self.assertEqual(mock_fetch.call_count, 3)
 
     def test_epg_gzip(self):
         xml = b'<?xml version="1.0"?><tv><channel id="demo"/></tv>'

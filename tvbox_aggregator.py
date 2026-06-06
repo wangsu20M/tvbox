@@ -197,7 +197,7 @@ def parse_playlist(content: bytes, default_group: str = "") -> list[Channel]:
     return channels
 
 
-def validate_stream(url: str, timeout: float) -> CheckResult:
+def validate_stream(url: str, timeout: float, depth: int = 0) -> CheckResult:
     if "|" in url:
         return CheckResult(False, 0, "custom-header stream skipped")
     result = fetch(url, timeout, max_bytes=128_000)
@@ -206,11 +206,25 @@ def validate_stream(url: str, timeout: float) -> CheckResult:
     sample = result.content[:16_000]
     text = decode_text(sample).lstrip()
     if text.startswith("#EXTM3U"):
-        if "#EXT-X-STREAM-INF" in text or "#EXTINF" in text:
+        media_urls = [
+            line.strip()
+            for line in text.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        if not media_urls:
+            return CheckResult(False, result.latency_ms, "HLS manifest has no media URI")
+        if depth >= 2:
+            return CheckResult(False, result.latency_ms, "HLS nesting is too deep")
+        child_url = urllib.parse.urljoin(result.final_url or url, media_urls[0])
+        child = validate_stream(child_url, timeout, depth + 1)
+        if child.ok:
             return CheckResult(
-                True, result.latency_ms, "reachable HLS stream", final_url=result.final_url
+                True,
+                result.latency_ms + child.latency_ms,
+                "reachable HLS media segment",
+                final_url=result.final_url or url,
             )
-        return CheckResult(False, result.latency_ms, "invalid HLS manifest")
+        return CheckResult(False, result.latency_ms + child.latency_ms, child.detail)
     if sample.startswith((b"\x47", b"\x00\x00\x00", b"FLV", b"RIFF", b"\x1aE\xdf\xa3")) or b"ftyp" in sample[:32]:
         return CheckResult(
             True, result.latency_ms, "reachable media stream", final_url=result.final_url
@@ -233,6 +247,11 @@ def check_streams(
     ):
         playlist = report.get("_playlist", b"")
         parsed = parse_playlist(playlist, report["name"])
+        parsed = [
+            channel
+            for channel in parsed
+            if "[geo-blocked]" not in channel.name.lower()
+        ]
         selected = parsed[:max_per_playlist] if max_per_playlist > 0 else parsed
         for channel in selected:
             if channel.url not in seen_urls:
