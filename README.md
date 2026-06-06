@@ -29,6 +29,7 @@ https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/status.json
 - 状态报告会统计每个可用播放列表及其频道条目数量。
 - 对播放列表内的频道 URL 做并发媒体探测，去重后生成 `public/live.m3u`。
 - TVBox 只引用仓库生成的已探测直播列表，不再直接加载全部上游条目。
+- 默认优先中国及周边公开目录、仅保留 HTTPS，并输出中文分组。
 - 内网地址、非 HTTP(S) 地址以及疑似 Cookie、Token、Authorization
   等账号凭据会被拒绝。
 - 连续可用天数越多、响应越快，评分越高；不可用源不会进入发布配置。

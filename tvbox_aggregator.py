@@ -46,6 +46,7 @@ class Channel:
     url: str
     metadata: str = ""
     group: str = ""
+    source: str = ""
 
 
 def utc_now() -> str:
@@ -183,7 +184,13 @@ def parse_playlist(content: bytes, default_group: str = "") -> list[Channel]:
             continue
         if "://" in line and pending_metadata:
             channels.append(
-                Channel(pending_name, line, pending_metadata, pending_group)
+                Channel(
+                    pending_name,
+                    line,
+                    pending_metadata,
+                    pending_group,
+                    default_group,
+                )
             )
             pending_metadata = ""
             pending_name = ""
@@ -192,7 +199,13 @@ def parse_playlist(content: bytes, default_group: str = "") -> list[Channel]:
         if "," in line and "://" in line:
             name, url = line.split(",", 1)
             channels.append(
-                Channel(name.strip() or "Unnamed", url.strip(), "", default_group)
+                Channel(
+                    name.strip() or "Unnamed",
+                    url.strip(),
+                    "",
+                    default_group,
+                    default_group,
+                )
             )
     return channels
 
@@ -238,19 +251,28 @@ def check_streams(
     workers: int,
     max_total: int,
     max_per_playlist: int,
+    preferred_sources: list[str] | None = None,
+    https_only: bool = False,
 ) -> tuple[list[Channel], dict[str, Any]]:
     candidates: list[Channel] = []
     seen_urls: set[str] = set()
-    for report in sorted(
+    preferred = [value.lower() for value in (preferred_sources or [])]
+    ranked_reports = sorted(
         (item for item in reports if item["ok"] and item["kind"] == "live_playlist"),
-        key=lambda item: (-item["score"], item["name"]),
-    ):
+        key=lambda item: (
+            not any(value in item["name"].lower() for value in preferred),
+            -item["score"],
+            item["name"],
+        ),
+    )
+    for report in ranked_reports:
         playlist = report.get("_playlist", b"")
         parsed = parse_playlist(playlist, report["name"])
         parsed = [
             channel
             for channel in parsed
             if "[geo-blocked]" not in channel.name.lower()
+            and (not https_only or channel.url.lower().startswith("https://"))
         ]
         selected = parsed[:max_per_playlist] if max_per_playlist > 0 else parsed
         for channel in selected:
@@ -285,15 +307,51 @@ def check_streams(
 
 
 def build_m3u(channels: list[Channel]) -> str:
+    group_map = {
+        "general": "综合",
+        "news": "新闻",
+        "sports": "体育",
+        "movies": "电影",
+        "series": "剧集",
+        "entertainment": "娱乐",
+        "kids": "少儿",
+        "animation": "动画",
+        "music": "音乐",
+        "documentary": "纪录片",
+        "education": "教育",
+        "lifestyle": "生活",
+        "comedy": "喜剧",
+        "religious": "宗教",
+        "undefined": "其他",
+    }
+
+    def localized_group(channel: Channel) -> str:
+        source = channel.source.lower()
+        if "china" in source or "中国大陆" in source:
+            return "中国大陆"
+        if "hong kong" in source or "香港" in source:
+            return "香港"
+        if "macao" in source or "澳门" in source:
+            return "澳门"
+        if "taiwan" in source or "台湾" in source:
+            return "台湾"
+        if "singapore" in source or "新加坡" in source:
+            return "新加坡"
+        if "malaysia" in source or "马来西亚" in source:
+            return "马来西亚"
+        parts = [
+            group_map.get(part.strip().lower(), part.strip())
+            for part in channel.group.split(";")
+            if part.strip()
+        ]
+        return "/".join(parts) if parts else "其他"
+
     lines = ["#EXTM3U"]
     for channel in channels:
-        if channel.metadata:
-            metadata = channel.metadata
-        else:
-            escaped_group = channel.group.replace('"', "'")
-            metadata = (
-                f'#EXTINF:-1 group-title="{escaped_group}",{channel.name}'
-            )
+        group = localized_group(channel).replace('"', "'")
+        logo_match = re.search(r'tvg-logo="([^"]*)"', channel.metadata)
+        logo = f' tvg-logo="{logo_match.group(1)}"' if logo_match else ""
+        metadata = f'#EXTINF:-1{logo} group-title="{group}",{channel.name}'
         lines.extend((metadata, channel.url))
     return "\n".join(lines) + "\n"
 
@@ -652,6 +710,8 @@ def main() -> int:
         args.stream_workers,
         int(stream_config.get("max_total", 800)),
         int(stream_config.get("max_per_playlist", 100)),
+        list(stream_config.get("preferred_sources", [])),
+        bool(stream_config.get("https_only", False)),
     )
     output, status = build_tvbox_config(base, reports, verified_channels)
     status["counts"].update(stream_status)

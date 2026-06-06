@@ -1,8 +1,23 @@
 {
   "stream_check": {
     "timeout": 7,
-    "max_total": 800,
-    "max_per_playlist": 100
+    "max_total": 500,
+    "max_per_playlist": 100,
+    "https_only": true,
+    "preferred_sources": [
+      "China",
+      "Hong Kong",
+      "Macao",
+      "Taiwan",
+      "Singapore",
+      "Malaysia",
+      "中国大陆",
+      "香港",
+      "澳门",
+      "台湾",
+      "新加坡",
+      "马来西亚"
+    ]
   },
   "discovery_feeds": [],
   "catalog_discovery": [

@@ -55,8 +55,21 @@ class ValidationTests(unittest.TestCase):
 
     def test_build_m3u(self):
         value = build_m3u([Channel("Demo", "https://x/live.m3u8", group="News")])
-        self.assertIn('group-title="News",Demo', value)
+        self.assertIn('group-title="新闻",Demo', value)
         self.assertIn("https://x/live.m3u8", value)
+
+    def test_build_m3u_prefers_source_region_group(self):
+        value = build_m3u(
+            [
+                Channel(
+                    "Demo",
+                    "https://x/live.m3u8",
+                    group="General",
+                    source="公开频道 China",
+                )
+            ]
+        )
+        self.assertIn('group-title="中国大陆",Demo', value)
 
     @patch("tvbox_aggregator.fetch")
     def test_stream_validation_follows_hls_to_media(self, mock_fetch):
