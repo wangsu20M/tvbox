@@ -1,32 +1,32 @@
 {
-  "updated_at": "2026-06-06T08:18:32+00:00",
+  "updated_at": "2026-06-06T11:59:51+00:00",
   "sources": {
-    "https://iptv-org.github.io/iptv/countries/cn.m3u": {
-      "ok": false,
-      "latency_ms": 578,
-      "detail": "<urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。>",
-      "success_streak": 0,
-      "failure_streak": 1,
-      "score": 0.0,
-      "checked_at": "2026-06-06T08:18:32+00:00"
-    },
-    "https://worker-9dd4.onrender.com/guide.xml": {
-      "ok": true,
-      "latency_ms": 1110,
-      "detail": "valid XMLTV document",
-      "success_streak": 1,
-      "failure_streak": 0,
-      "score": 36.45,
-      "checked_at": "2026-06-06T08:18:32+00:00"
-    },
     "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8": {
       "ok": true,
-      "latency_ms": 11234,
+      "latency_ms": 49,
+      "detail": "valid M3U playlist",
+      "success_streak": 2,
+      "failure_streak": 0,
+      "score": 43.76,
+      "checked_at": "2026-06-06T11:59:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/countries/cn.m3u": {
+      "ok": true,
+      "latency_ms": 47,
       "detail": "valid M3U playlist",
       "success_streak": 1,
       "failure_streak": 0,
-      "score": 2.0,
-      "checked_at": "2026-06-06T08:18:32+00:00"
+      "score": 41.77,
+      "checked_at": "2026-06-06T11:59:51+00:00"
+    },
+    "https://worker-9dd4.onrender.com/guide.xml": {
+      "ok": true,
+      "latency_ms": 102,
+      "detail": "valid XMLTV document",
+      "success_streak": 2,
+      "failure_streak": 0,
+      "score": 43.49,
+      "checked_at": "2026-06-06T11:59:51+00:00"
     }
   }
 }
