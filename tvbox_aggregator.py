@@ -146,10 +146,12 @@ def validate_playlist(content: bytes) -> tuple[bool, str]:
     if not text:
         return False, "empty playlist"
     if text.startswith("#EXTM3U") and "#EXTINF" in text:
-        return True, "valid M3U playlist"
+        count = sum(1 for line in text.splitlines() if line.lstrip().startswith("#EXTINF"))
+        return True, f"valid M3U playlist ({count} channels)"
     lines = [line.strip() for line in text.splitlines() if line.strip()]
-    if any("," in line and "://" in line for line in lines[:200]):
-        return True, "valid TVBox text playlist"
+    count = sum(1 for line in lines if "," in line and "://" in line)
+    if count:
+        return True, f"valid TVBox text playlist ({count} channels)"
     return False, "unrecognized playlist format"
 
 
@@ -216,6 +218,44 @@ def load_candidates(config: dict[str, Any], timeout: float) -> dict[str, list[di
                 if isinstance(item, dict):
                     result[key].append(normalize_entry(item, kind))
 
+    for catalog in config.get("catalog_discovery", []):
+        if not catalog.get("enabled", True):
+            continue
+        response = fetch(str(catalog.get("url", "")), timeout)
+        if not response.ok:
+            continue
+        try:
+            records = json.loads(decode_text(response.content))
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(records, list):
+            continue
+        code_field = str(catalog.get("code_field", "code"))
+        name_field = str(catalog.get("name_field", "name"))
+        template = str(catalog.get("playlist_template", ""))
+        include = {str(value).lower() for value in catalog.get("include", [])}
+        prefix = str(catalog.get("name_prefix", "")).strip()
+        epg = str(catalog.get("epg", "")).strip()
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            code = str(record.get(code_field, "")).strip()
+            if not code or (include and code.lower() not in include):
+                continue
+            url = template.replace("{code}", code).replace(
+                "{code_lower}", code.lower()
+            )
+            item = {
+                "name": f"{prefix} {record.get(name_field, code)}".strip(),
+                "url": url,
+                "enabled": True,
+            }
+            if epg:
+                item["epg"] = epg
+            result["live_playlists"].append(
+                normalize_entry(item, "live_playlist")
+            )
+
     for key in result:
         unique: dict[str, dict[str, Any]] = {}
         for item in result[key]:
@@ -277,6 +317,9 @@ def check_candidates(
             "score": score_result(response if valid else CheckResult(False, 0, detail), streak),
             "checked_at": state["updated_at"],
         }
+        channel_match = re.search(r"\((\d+) channels\)", detail)
+        if channel_match:
+            checked["channel_count"] = int(channel_match.group(1))
         if parsed_config is not None:
             checked["_config"] = parsed_config
         source_state = {
@@ -360,6 +403,9 @@ def build_tvbox_config(
             "configs": len(configs),
             "live_playlists": len(playlists),
             "epg_sources": len(epgs),
+            "channels_listed": sum(
+                int(item.get("channel_count", 0)) for item in playlists
+            ),
         },
         "sources": public_reports,
     }
@@ -393,6 +439,7 @@ def build_index(status: dict[str, Any]) -> str:
   <h1>TVBox Source Keeper</h1>
   <p>最后更新：{status['updated_at']}</p>
   <p>已检查 {counts['checked']} 个候选，当前可用 {counts['available']} 个。</p>
+  <p>可用播放列表共登记 {counts.get('channels_listed', 0)} 个频道条目。</p>
   <p>TVBox 固定配置地址：<code>tvbox.json</code></p>
   <table>
     <thead><tr><th>名称</th><th>类型</th><th>状态</th><th>延迟</th><th>评分</th></tr></thead>

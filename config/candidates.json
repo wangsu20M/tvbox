@@ -1,11 +1,79 @@
 {
   "discovery_feeds": [],
+  "catalog_discovery": [
+    {
+      "name": "IPTV.org 国家目录",
+      "url": "https://iptv-org.github.io/api/countries.json",
+      "code_field": "code",
+      "name_field": "name",
+      "include": ["CN", "HK", "MO", "TW", "SG", "MY"],
+      "playlist_template": "https://iptv-org.github.io/iptv/countries/{code_lower}.m3u",
+      "name_prefix": "公开频道",
+      "epg": "https://worker-9dd4.onrender.com/guide.xml"
+    },
+    {
+      "name": "IPTV.org 分类目录",
+      "url": "https://iptv-org.github.io/api/categories.json",
+      "code_field": "id",
+      "name_field": "name",
+      "include": ["news", "movies", "entertainment", "kids", "music", "sports"],
+      "playlist_template": "https://iptv-org.github.io/iptv/categories/{code_lower}.m3u",
+      "name_prefix": "全球公开"
+    }
+  ],
   "tvbox_configs": [],
   "live_playlists": [
     {
-      "name": "IPTV.org 中国公开频道",
+      "name": "中国大陆公开频道",
       "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
       "epg": "https://worker-9dd4.onrender.com/guide.xml"
+    },
+    {
+      "name": "香港公开频道",
+      "url": "https://iptv-org.github.io/iptv/countries/hk.m3u",
+      "epg": "https://worker-9dd4.onrender.com/guide.xml"
+    },
+    {
+      "name": "澳门公开频道",
+      "url": "https://iptv-org.github.io/iptv/countries/mo.m3u",
+      "epg": "https://worker-9dd4.onrender.com/guide.xml"
+    },
+    {
+      "name": "台湾公开频道",
+      "url": "https://iptv-org.github.io/iptv/countries/tw.m3u",
+      "epg": "https://worker-9dd4.onrender.com/guide.xml"
+    },
+    {
+      "name": "新加坡公开频道",
+      "url": "https://iptv-org.github.io/iptv/countries/sg.m3u"
+    },
+    {
+      "name": "马来西亚公开频道",
+      "url": "https://iptv-org.github.io/iptv/countries/my.m3u"
+    },
+    {
+      "name": "全球公开新闻频道",
+      "url": "https://iptv-org.github.io/iptv/categories/news.m3u"
+    },
+    {
+      "name": "全球公开电影频道",
+      "url": "https://iptv-org.github.io/iptv/categories/movies.m3u"
+    },
+    {
+      "name": "全球公开娱乐频道",
+      "url": "https://iptv-org.github.io/iptv/categories/entertainment.m3u"
+    },
+    {
+      "name": "全球公开少儿频道",
+      "url": "https://iptv-org.github.io/iptv/categories/kids.m3u"
+    },
+    {
+      "name": "全球公开音乐频道",
+      "url": "https://iptv-org.github.io/iptv/categories/music.m3u"
+    },
+    {
+      "name": "全球公开体育频道",
+      "url": "https://iptv-org.github.io/iptv/categories/sports.m3u"
     },
     {
       "name": "Free-TV 官方免费频道",

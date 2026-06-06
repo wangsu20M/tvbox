@@ -21,10 +21,12 @@ https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/status.json
 ## 工作方式
 
 - `config/candidates.json` 保存候选配置、直播列表、EPG 和公开发现清单。
+- 每天读取 IPTV.org 的国家与分类 API，自动发现配置中选定的公开目录。
 - GitHub Actions 每天北京时间 03:23 运行，也可以手动运行。
 - 检查结果直接提交回 `main`，无需配置 GitHub Pages。
 - 最多并发检查 12 个候选，每个候选默认超时 12 秒。
 - JSON、M3U/TVBox 文本直播列表和 XMLTV 均会做格式验证。
+- 状态报告会统计每个可用播放列表及其频道条目数量。
 - 内网地址、非 HTTP(S) 地址以及疑似 Cookie、Token、Authorization
   等账号凭据会被拒绝。
 - 连续可用天数越多、响应越快，评分越高；不可用源不会进入发布配置。
