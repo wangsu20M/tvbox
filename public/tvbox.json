@@ -1,0 +1,14 @@
+{
+  "wallpaper": "https://picsum.photos/1280/720",
+  "sites": [],
+  "lives": [
+    {
+      "name": "Free-TV 官方免费频道",
+      "type": 0,
+      "url": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8",
+      "playerType": 1,
+      "epg": "https://worker-9dd4.onrender.com/guide.xml",
+      "logo": ""
+    }
+  ]
+}

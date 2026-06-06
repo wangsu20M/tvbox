@@ -1,0 +1,54 @@
+{
+  "updated_at": "2026-06-06T08:18:44+00:00",
+  "selected_config": null,
+  "counts": {
+    "checked": 3,
+    "available": 2,
+    "configs": 0,
+    "live_playlists": 1,
+    "epg_sources": 1
+  },
+  "sources": [
+    {
+      "name": "IPTV.org 社区 XMLTV",
+      "url": "https://worker-9dd4.onrender.com/guide.xml",
+      "enabled": true,
+      "kind": "epg",
+      "ok": true,
+      "latency_ms": 1110,
+      "detail": "valid XMLTV document",
+      "success_streak": 1,
+      "failure_streak": 0,
+      "score": 36.45,
+      "checked_at": "2026-06-06T08:18:32+00:00"
+    },
+    {
+      "name": "Free-TV 官方免费频道",
+      "url": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8",
+      "enabled": true,
+      "kind": "live_playlist",
+      "epg": "https://worker-9dd4.onrender.com/guide.xml",
+      "ok": true,
+      "latency_ms": 11234,
+      "detail": "valid M3U playlist",
+      "success_streak": 1,
+      "failure_streak": 0,
+      "score": 2.0,
+      "checked_at": "2026-06-06T08:18:32+00:00"
+    },
+    {
+      "name": "IPTV.org 中国公开频道",
+      "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
+      "enabled": true,
+      "kind": "live_playlist",
+      "epg": "https://worker-9dd4.onrender.com/guide.xml",
+      "ok": false,
+      "latency_ms": 578,
+      "detail": "<urlopen error [WinError 10054] 远程主机强迫关闭了一个现有的连接。>",
+      "success_streak": 0,
+      "failure_streak": 1,
+      "score": 0.0,
+      "checked_at": "2026-06-06T08:18:32+00:00"
+    }
+  ]
+}
