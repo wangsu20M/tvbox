@@ -2,6 +2,14 @@ name: Update TVBox sources
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/update-sources.yml"
+      - "config/**"
+      - "tests/**"
+      - "tvbox_aggregator.py"
   schedule:
     - cron: "23 19 * * *"
 
@@ -39,6 +47,8 @@ jobs:
           git push
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
