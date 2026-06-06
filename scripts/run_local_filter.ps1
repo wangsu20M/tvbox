@@ -13,7 +13,7 @@ $gitArgs = @(
 & git merge --ff-only origin/main
 & python local_filter.py
 
-& git add public/live.m3u
+& git add public/live.m3u public/tvbox.json
 & git diff --cached --quiet
 if ($LASTEXITCODE -ne 0) {
     & git commit -m "chore: update mainland-verified streams"

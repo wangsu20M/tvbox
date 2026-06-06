@@ -3,7 +3,7 @@
   "sites": [],
   "lives": [
     {
-      "name": "每日验证直播 (230)",
+      "name": "墙内直连验证 (155)",
       "type": 0,
       "url": "https://raw.githubusercontent.com/wangsu20M/tvbox/main/public/live.m3u",
       "playerType": 1,

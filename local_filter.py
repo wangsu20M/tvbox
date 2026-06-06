@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -29,6 +30,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=Path("public/candidates.m3u"))
     parser.add_argument("--output", type=Path, default=Path("public/live.m3u"))
+    parser.add_argument("--tvbox", type=Path, default=Path("public/tvbox.json"))
     parser.add_argument("--timeout", type=float, default=7)
     parser.add_argument("--workers", type=int, default=32)
     args = parser.parse_args()
@@ -55,6 +57,16 @@ def main() -> int:
         encoding="utf-8",
         newline="\n",
     )
+    if args.tvbox.exists():
+        tvbox = json.loads(args.tvbox.read_text(encoding="utf-8"))
+        for live in tvbox.get("lives", []):
+            if live.get("url", "").endswith("/public/live.m3u"):
+                live["name"] = f"墙内直连验证 ({len(available)})"
+        args.tvbox.write_text(
+            json.dumps(tvbox, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
     print(f"direct_checked={len(channels)} direct_available={len(available)}")
     return 0 if available else 2
 
