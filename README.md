@@ -106,6 +106,45 @@ powershell -ExecutionPolicy Bypass -File scripts/install_local_task.ps1
 - `tvbox.json`：TVBox 使用的固定配置
 - `live.m3u`：逐条探测后生成的直播列表
 - `candidates.m3u`：GitHub 境外节点发现的候选列表
+
+## 私人点播 API
+
+`vod_service.py` 提供兼容 TVBox `type: 1` 的 CMS API，默认读取
+`data/vod_catalog.json`：
+
+```powershell
+python vod_service.py --port 8765
+```
+
+接口地址：
+
+```text
+http://服务器地址:8765/api/vod/
+```
+
+TVBox 直接导入：
+
+```text
+http://服务器地址:8765/tvbox.json
+```
+
+支持首页、分类、分页、搜索、详情和播放。GitHub 每周尝试从 Internet
+Archive 生成一批带公共领域许可标记且存在 MP4 文件的条目。部署到服务器时，
+直接使用服务返回的 `/tvbox.json`，不需要修改仓库配置。
+
+Docker 部署：
+
+```bash
+docker compose up -d --build
+```
+
+然后在 TVBox 导入：
+
+```text
+http://服务器IP:8765/tvbox.json
+```
+
+正式使用时建议通过现有反向代理绑定 HTTPS 域名，并只开放给自己使用。
 - `status.json`：机器可读的检查报告
 - `index.html`：可视化状态页
 

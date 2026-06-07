@@ -1,0 +1,14 @@
+services:
+  tvbox-vod:
+    build: .
+    container_name: tvbox-vod
+    restart: unless-stopped
+    ports:
+      - "8765:8765"
+    volumes:
+      - ./data/vod_catalog.json:/app/data/vod_catalog.json:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M

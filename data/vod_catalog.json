@@ -1,0 +1,14 @@
+[
+  {
+    "id": "demo-open-video",
+    "name": "开放许可视频演示",
+    "year": "Demo",
+    "remarks": "服务链路测试",
+    "type": "公共领域电影",
+    "description": "用于验证 TVBox 点播分类、详情和播放器链路。GitHub 定时任务会用 Internet Archive 的公共领域内容替换此演示条目。",
+    "pic": "https://archive.org/services/img/BigBuckBunny_328",
+    "play_url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+    "source_url": "https://archive.org/details/BigBuckBunny_328",
+    "license_url": "https://creativecommons.org/licenses/by/3.0/"
+  }
+]

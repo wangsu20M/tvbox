@@ -10,8 +10,10 @@ on:
       - "config/**"
       - "tests/**"
       - "tvbox_aggregator.py"
+      - "vod_catalog.py"
+      - "vod_service.py"
   schedule:
-    - cron: "23 19 * * *"
+    - cron: "23 19 * * 0"
 
 permissions:
   contents: write
@@ -29,6 +31,10 @@ jobs:
       - name: Check and rank sources
         run: python tvbox_aggregator.py --live-filename candidates.m3u
 
+      - name: Refresh open-license VOD catalog
+        run: python vod_catalog.py --rows 24
+        continue-on-error: true
+
       - name: Run tests
         run: python -m unittest discover -s tests -v
 
@@ -36,6 +42,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/state.json public/candidates.m3u public/status.json public/index.html
+          git add data/state.json data/vod_catalog.json public/candidates.m3u public/status.json public/index.html
           git diff --cached --quiet || git commit -m "chore: update source health"
           git push
