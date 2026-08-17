@@ -1,131 +1,131 @@
 {
-  "updated_at": "2026-08-16T19:40:30+00:00",
+  "updated_at": "2026-08-17T19:47:51+00:00",
   "sources": {
-    "https://iptv-org.github.io/iptv/countries/tw.m3u": {
-      "ok": true,
-      "latency_ms": 21,
-      "detail": "valid M3U playlist (25 channels)",
-      "success_streak": 77,
-      "failure_streak": 0,
-      "score": 99.9,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
-    "https://iptv-org.github.io/iptv/countries/cn.m3u": {
-      "ok": true,
-      "latency_ms": 28,
-      "detail": "valid M3U playlist (141 channels)",
-      "success_streak": 79,
-      "failure_streak": 0,
-      "score": 99.86,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
-    "https://iptv-org.github.io/iptv/categories/news.m3u": {
-      "ok": true,
-      "latency_ms": 25,
-      "detail": "valid M3U playlist (942 channels)",
-      "success_streak": 77,
-      "failure_streak": 0,
-      "score": 99.88,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
     "https://iptv-org.github.io/iptv/countries/mo.m3u": {
       "ok": true,
-      "latency_ms": 31,
+      "latency_ms": 88,
       "detail": "valid M3U playlist (7 channels)",
-      "success_streak": 77,
+      "success_streak": 78,
       "failure_streak": 0,
-      "score": 99.84,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
-    "https://iptv-org.github.io/iptv/categories/movies.m3u": {
-      "ok": true,
-      "latency_ms": 25,
-      "detail": "valid M3U playlist (737 channels)",
-      "success_streak": 77,
-      "failure_streak": 0,
-      "score": 99.88,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
-    "https://iptv-org.github.io/iptv/countries/my.m3u": {
-      "ok": true,
-      "latency_ms": 28,
-      "detail": "valid M3U playlist (17 channels)",
-      "success_streak": 77,
-      "failure_streak": 0,
-      "score": 99.86,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
-    "https://iptv-org.github.io/iptv/categories/music.m3u": {
-      "ok": true,
-      "latency_ms": 23,
-      "detail": "valid M3U playlist (729 channels)",
-      "success_streak": 77,
-      "failure_streak": 0,
-      "score": 99.88,
-      "checked_at": "2026-08-16T19:40:30+00:00"
-    },
-    "https://iptv-org.github.io/iptv/countries/sg.m3u": {
-      "ok": true,
-      "latency_ms": 37,
-      "detail": "valid M3U playlist (10 channels)",
-      "success_streak": 77,
-      "failure_streak": 0,
-      "score": 99.81,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.56,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     },
     "https://iptv-org.github.io/iptv/countries/hk.m3u": {
       "ok": true,
-      "latency_ms": 40,
+      "latency_ms": 93,
       "detail": "valid M3U playlist (13 channels)",
-      "success_streak": 77,
+      "success_streak": 78,
       "failure_streak": 0,
-      "score": 99.8,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.53,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     },
-    "https://iptv-org.github.io/iptv/categories/kids.m3u": {
+    "https://iptv-org.github.io/iptv/countries/tw.m3u": {
       "ok": true,
-      "latency_ms": 39,
-      "detail": "valid M3U playlist (365 channels)",
-      "success_streak": 77,
+      "latency_ms": 94,
+      "detail": "valid M3U playlist (25 channels)",
+      "success_streak": 78,
       "failure_streak": 0,
-      "score": 99.81,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.53,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     },
-    "https://iptv-org.github.io/iptv/categories/entertainment.m3u": {
+    "https://iptv-org.github.io/iptv/countries/sg.m3u": {
       "ok": true,
-      "latency_ms": 39,
-      "detail": "valid M3U playlist (851 channels)",
-      "success_streak": 77,
+      "latency_ms": 98,
+      "detail": "valid M3U playlist (10 channels)",
+      "success_streak": 78,
       "failure_streak": 0,
-      "score": 99.81,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.51,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/categories/movies.m3u": {
+      "ok": true,
+      "latency_ms": 96,
+      "detail": "valid M3U playlist (733 channels)",
+      "success_streak": 78,
+      "failure_streak": 0,
+      "score": 99.52,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     },
     "https://iptv-org.github.io/iptv/categories/sports.m3u": {
       "ok": true,
-      "latency_ms": 31,
-      "detail": "valid M3U playlist (458 channels)",
-      "success_streak": 77,
+      "latency_ms": 105,
+      "detail": "valid M3U playlist (459 channels)",
+      "success_streak": 78,
       "failure_streak": 0,
-      "score": 99.84,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.47,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     },
-    "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8": {
+    "https://iptv-org.github.io/iptv/countries/cn.m3u": {
       "ok": true,
-      "latency_ms": 31,
-      "detail": "valid M3U playlist (1872 channels)",
+      "latency_ms": 118,
+      "detail": "valid M3U playlist (141 channels)",
       "success_streak": 80,
       "failure_streak": 0,
-      "score": 99.84,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.41,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/categories/music.m3u": {
+      "ok": true,
+      "latency_ms": 109,
+      "detail": "valid M3U playlist (729 channels)",
+      "success_streak": 78,
+      "failure_streak": 0,
+      "score": 99.45,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/countries/my.m3u": {
+      "ok": true,
+      "latency_ms": 129,
+      "detail": "valid M3U playlist (17 channels)",
+      "success_streak": 78,
+      "failure_streak": 0,
+      "score": 99.35,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/categories/entertainment.m3u": {
+      "ok": true,
+      "latency_ms": 137,
+      "detail": "valid M3U playlist (848 channels)",
+      "success_streak": 78,
+      "failure_streak": 0,
+      "score": 99.31,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/categories/kids.m3u": {
+      "ok": true,
+      "latency_ms": 144,
+      "detail": "valid M3U playlist (368 channels)",
+      "success_streak": 78,
+      "failure_streak": 0,
+      "score": 99.28,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://iptv-org.github.io/iptv/categories/news.m3u": {
+      "ok": true,
+      "latency_ms": 153,
+      "detail": "valid M3U playlist (943 channels)",
+      "success_streak": 78,
+      "failure_streak": 0,
+      "score": 99.23,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     },
     "https://worker-9dd4.onrender.com/guide.xml": {
       "ok": true,
-      "latency_ms": 99,
+      "latency_ms": 54,
       "detail": "valid XMLTV document",
-      "success_streak": 80,
+      "success_streak": 81,
       "failure_streak": 0,
-      "score": 99.5,
-      "checked_at": "2026-08-16T19:40:30+00:00"
+      "score": 99.73,
+      "checked_at": "2026-08-17T19:47:51+00:00"
+    },
+    "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8": {
+      "ok": true,
+      "latency_ms": 151,
+      "detail": "valid M3U playlist (2065 channels)",
+      "success_streak": 81,
+      "failure_streak": 0,
+      "score": 99.25,
+      "checked_at": "2026-08-17T19:47:51+00:00"
     }
   }
 }
